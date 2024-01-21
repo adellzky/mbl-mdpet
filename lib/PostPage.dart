@@ -46,7 +46,7 @@ class _PostPageState extends State<PostPage> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple[400],
+        backgroundColor: Color(0XFFBE83B2),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -96,7 +96,7 @@ class _PostPageState extends State<PostPage> {
                 width: double.maxFinite,
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: Colors.deepPurple,
+                    color: Color(0XFFBE83B2),
                     borderRadius: BorderRadius.circular(8)),
                 child: Text(
                   "Post Consultation",
@@ -209,7 +209,7 @@ class _PostPageState extends State<PostPage> {
                                         child: Container(
                                           width: double.maxFinite,
                                           decoration: BoxDecoration(
-                                              color: Colors.deepPurple,
+                                              color: Color(0XFFBE83B2),
                                               borderRadius:
                                                   BorderRadius.circular(8)),
                                           padding: EdgeInsets.all(6),

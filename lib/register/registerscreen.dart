@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_mobile/model/ApiService.dart';
 import '../login/login.dart';
+import '../model/AuthServices.dart';
 
 class RegisterWidget extends StatefulWidget {
   const RegisterWidget({super.key});
@@ -138,25 +138,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
             ),
           ),
         ),
-        // Row(
-        //   children: [
-        //     Checkbox(
-        //         value: isChecked,
-        //         onChanged: (bool? value) {
-        //           setState(() {
-        //             isChecked = value!;
-        //           });
-        //         }),
-        //     const Text('By creating an account\n'
-        //         'you are agree to the Terms and\n'
-        //         'Conditions and Privacy Policy'),
-        //   ],
-        // ),
         Container(
           margin: const EdgeInsets.only(top: 40),
           child: ElevatedButton(
             onPressed: () async {
-              bool succes = await Api().register(
+              bool succes = await Auth().register(
                 name: nameController.text,
                 email: emailController.text,
                 password: passController.text,
@@ -165,7 +151,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
               if (succes) {
                 print('Register Berhasil!');
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, '/home');
               } else {
                 print('Register Gagal. Coba Lagi!');
               }

@@ -1,8 +1,9 @@
 class Katalog {
   String name, deskripsi, image;
-  int harga;
+  int id_order, harga;
 
   Katalog({
+    required this.id_order,
     required this.name,
     required this.harga,
     required this.deskripsi,
@@ -11,6 +12,7 @@ class Katalog {
 
   factory Katalog.fromJson(Map<String, dynamic> json) {
     return Katalog(
+      id_order: json['id_order'],
       name: json['name'],
       harga: json['harga'],
       deskripsi: json['deskripsi'],

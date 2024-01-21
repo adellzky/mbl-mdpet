@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:pbl_mobile/data/Katalog.dart';
+import 'package:pbl_mobile/layanan/Katalog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShoppingCartPage extends StatefulWidget {
   final List<String> shoppingCart;
@@ -19,8 +22,24 @@ class ShoppingCartPage extends StatefulWidget {
 class _ShoppingCartPageState extends State<ShoppingCartPage> {
   List<String> shoppingCart;
   List<Katalog> dataKatalog;
+  List katalog = [];
 
   _ShoppingCartPageState(this.shoppingCart, this.dataKatalog);
+
+  getChart() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    katalog = jsonDecode(prefs.getString("chart")!);
+    print(katalog);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("OK!");
+    getChart();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +67,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
               itemCount: shoppingCart.length,
               itemBuilder: (context, index) {
                 String itemName = shoppingCart[index];
-                String itemImage = dataKatalog[index % dataKatalog.length].image;
+                String itemImage =
+                    dataKatalog[index % dataKatalog.length].image;
                 int itemPrice = dataKatalog[index % dataKatalog.length].harga;
 
                 return Card(

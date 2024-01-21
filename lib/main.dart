@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_mobile/ChatScreen.dart';
-import 'package:pbl_mobile/ConsultationPage.dart';
 import 'package:pbl_mobile/PostPage.dart';
-import 'package:pbl_mobile/data/homescreen.dart';
-import 'package:pbl_mobile/grooming/grooming.dart';
+import 'package:pbl_mobile/layanan/homescreen.dart';
 import 'package:pbl_mobile/home.dart';
 import 'package:pbl_mobile/login/login.dart';
+import 'package:pbl_mobile/profile/profiledisplay.dart';
 import 'package:pbl_mobile/welcome.dart';
 
 void main() => runApp(MyApp());
@@ -16,12 +14,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // home: PostPage(),
-      // home: LoginPage(),
+      // home: DisplayProfile(),
       routes: {
-        '/home': (context) => PostPage(),
+        '/wel': (context) => WelcomePage(),
+        '/home': (context) => HomePage(),
         '/login': (context) => LoginPage()
       },
-      initialRoute: '/login',
+      initialRoute: '/wel',
     );
   }
 }

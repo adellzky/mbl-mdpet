@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pbl_mobile/model/ApiService.dart';
 import 'package:pbl_mobile/model/AuthServices.dart';
 import '../register/register.dart';
 
@@ -87,7 +86,7 @@ class _LoginWidgetState extends State<LoginWidget> {
 
         ElevatedButton(
           onPressed: () async {
-            bool succes = await AuthServices().login(
+            bool succes = await Auth().login(
                 email: userController.text, password: passController.text);
 
             if (succes) {

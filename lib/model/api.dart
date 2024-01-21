@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pbl_mobile/data/katalog.dart';
+import 'package:pbl_mobile/layanan/katalog.dart';
 
 class Api {
   final dio = Dio();
-  final url = "http://localhost:8000/api";
+  final url = "http://127.0.0.1:8000/api";
 
   Future<List<dynamic>> fetchData() async {
     final response = await dio.get("$url/products");

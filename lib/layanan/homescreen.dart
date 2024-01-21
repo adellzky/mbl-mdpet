@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:pbl_mobile/co.dart';
+import 'package:pbl_mobile/model/TransaksiServices.dart';
 import 'dart:convert';
-
-import 'package:pbl_mobile/data/api.dart';
-import 'package:pbl_mobile/data/katalog.dart';
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: Home(),
-//     );
-//   }
-// }
+import 'package:pbl_mobile/model/api.dart';
+import 'package:pbl_mobile/layanan/katalog.dart';
+import 'package:pbl_mobile/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -39,26 +31,15 @@ class _HomeState extends State<Home> {
     getKatalog();
   }
 
-  // Future<void> fetchData() async {
-  //   final response = await http.get(
-  //       Uri.parse('https://example.com/api/Katalog')); // Ganti URL sesuai API Anda
-
-  //   if (response.statusCode == 200) {
-  //     final List<dynamic> responseData = json.decode(response.body);
-  //     setState(() {
-  //       dataKatalog = responseData.map((json) => Katalog.fromJson(json)).toList();
-  //     });
-  //   } else {
-  //     throw Exception('Failed to load data');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
           icon: const Icon(Icons.arrow_back),
           color: Colors.purpleAccent,
         ),
@@ -73,18 +54,18 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         actions: [
           Padding(padding: const EdgeInsets.only(right: 0.15)),
-          IconButton(
-            color: Colors.purpleAccent,
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ShoppingCartPage(),
-                ),
-              );
-            },
-          ),
+          // IconButton(
+          //   color: Colors.purpleAccent,
+          //   icon: Icon(Icons.shopping_cart),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => ShoppingCartPage(),
+          //       ),
+          //     );
+          //   },
+          // ),
         ],
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -102,8 +83,8 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(30),
                       child: Image.network(
                         "${dataKatalog[index]['image']}",
-                        width: 130,
-                        height: 130,
+                        width: 90,
+                        height: 90,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -150,13 +131,28 @@ class _HomeState extends State<Home> {
                           ),
                           const SizedBox(height: 5),
                           ElevatedButton(
-                            onPressed: () {
-                              _addToCart(dataKatalog[index]);
+                            onPressed: () async {
+                              // _addToCart(dataKatalog[index]);
+                              // print("${dataKatalog[index]}");
+                              var response = await TransaksiServices()
+                                  .postOrder(
+                                      idProduk: dataKatalog[index]['id']);
+
+                              if (response['status']) {
+                                print("Order Sukses");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CheckoutPage()),
+                                );
+                              } else {
+                                print("Order Failed!");
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                                 primary: Colors.purpleAccent),
                             child: const Text(
-                              'Masukkan Keranjang',
+                              'Order Now!',
                               style: TextStyle(fontFamily: 'Poppins'),
                             ),
                           ),
@@ -173,20 +169,64 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _addToCart(Katalog Katalog) {
-    setState(() {
-      ShoppingCartPage.shoppingCart.add(Katalog);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${Katalog.name} ditambahkan ke dalam keranjang.'),
-      ),
-    );
+  void _addToCart(katalog) async {
+    // setState(() {
+    //   ShoppingCartPage.shoppingCart.add(Katalog);
+    // });
+    print(katalog);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? chartString = prefs.getString("chart");
+    List<dynamic> chart = chartString != null ? jsonDecode(chartString) : [];
+
+    // print("Ini data baru ${[...chart, katalog]}");
+    // prefs.setString("chart", jsonEncode([...chart, katalog]));
+    print(chart);
+    print(chartString);
+
+    // if (chart != null) {
+    // } else {
+    //   // Assuming katalog is a JSON-serializable object
+    //   prefs.setString("chart", jsonEncode([katalog]));
+    // }
+
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('${katalog.name} ditambahkan ke dalam keranjang.'),
+    //   ),
+    // );
   }
 }
 
-class ShoppingCartPage extends StatelessWidget {
+class ShoppingCartPage extends StatefulWidget {
   static List<Katalog> shoppingCart = [];
+
+  @override
+  State<ShoppingCartPage> createState() => _ShoppingCartPageState();
+}
+
+class _ShoppingCartPageState extends State<ShoppingCartPage> {
+  List<dynamic> shoppingCart = [];
+
+  getChart() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    shoppingCart = jsonDecode(prefs.getString("chart")!);
+    print(shoppingCart);
+    setState(() {});
+  }
+
+  void _removeItem(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    shoppingCart.removeAt(index);
+    prefs.setString("chart", "$shoppingCart");
+    print("$shoppingCart");
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getChart();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +251,7 @@ class ShoppingCartPage extends StatelessWidget {
             child: ListView.builder(
               itemCount: shoppingCart.length,
               itemBuilder: (context, index) {
-                Katalog item = shoppingCart[index];
+                var item = shoppingCart[index];
 
                 return Card(
                   child: ListTile(
@@ -220,7 +260,7 @@ class ShoppingCartPage extends StatelessWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            item.image,
+                            item['image'],
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
@@ -232,7 +272,7 @@ class ShoppingCartPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.name,
+                                item['name'],
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.bold,
@@ -243,7 +283,7 @@ class ShoppingCartPage extends StatelessWidget {
                               Container(
                                 margin: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  item.deskripsi,
+                                  item['deskripsi'],
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontFamily: 'Poppins',
@@ -256,7 +296,7 @@ class ShoppingCartPage extends StatelessWidget {
                               Container(
                                 margin: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  'Harga : ${item.harga}',
+                                  'Harga : ${item['price']}',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -284,9 +324,5 @@ class ShoppingCartPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _removeItem(int index) {
-    shoppingCart.removeAt(index);
   }
 }
